@@ -12,7 +12,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 find_package(PkgConfig REQUIRED)
 
-pkg_check_modules(QuickFIX REQUIRED quickfix)
+pkg_check_modules(QuickFIX REQUIRED quickfix libxml-2.0)
 
 # If QuickFIX is not found automatically, you might need to specify its location
 # set(QUICKFIX_ROOT "/path/to/quickfix")
@@ -22,10 +22,13 @@ pkg_check_modules(QuickFIX REQUIRED quickfix)
 add_executable(fix-server main.cpp)
 
 # Link the QuickFIX library
-target_link_libraries(fix-server PRIVATE QuickFIX::quickfix)
+target_link_libraries(fix-server PRIVATE ${QuickFIX_LIBRARIES})
+target_link_directories(fix-server PRIVATE ${QuickFIX_LIBRARY_DIRS})
 
 # Include directories for QuickFIX headers
-target_include_directories(fix-server PRIVATE ${QUICKFIX_INCLUDE_DIRS})
+target_include_directories(fix-server PRIVATE ${QuickFIX_INCLUDE_DIRS})
+
+target_compile_definitions(fix-server PRIVATE HAVE_STD_UNIQUE_PTR ${QuickFIX_CLFAGS_OTHER})
 
 # Copy the configuration file to the build directory
 configure_file(${CMAKE_SOURCE_DIR}/server_settings.cfg
@@ -39,5 +42,5 @@ install(FILES ${CMAKE_SOURCE_DIR}/server_settings.cfg
         DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
 # Output some status messages
-message(STATUS "QuickFIX include dirs: ${QUICKFIX_INCLUDE_DIRS}")
-message(STATUS "QuickFIX libraries: ${QUICKFIX_LIBRARIES}")
+message(STATUS "QuickFIX include dirs: ${QuickFIX_INCLUDE_DIRS}")
+message(STATUS "QuickFIX libraries: ${QuickFIX_LIBRARIES}")

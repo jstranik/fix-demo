@@ -2,7 +2,7 @@
   description = "FIX protocol server and client";
 
   inputs = {
-    nixpkgs.url = "/Users/janstranik/project/nixpkgs";
+    nixpkgs.url = "github:jstranik/nixpkgs?ref=quickfix-python3-bindings";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -13,10 +13,11 @@
 
         fix-server = pkgs.callPackage ./server/fix-server.nix {};
         fix-client = pkgs.callPackage ./client/fix-client.nix {};
+        pyfix = pkgs.callPackage ./pyfix.nix { buildPythonPackage = pkgs.python3Packages.buildPythonPackage; };
 
       in {
         packages = {
-          inherit fix-server fix-client;
+          inherit fix-server fix-client pyfix;
           default = fix-server;
         };
 
@@ -32,11 +33,14 @@
         };
 
         devShells.default = pkgs.mkShell {
-          buildInputs = with pkgs; [
-            cmake
-            quickfix
-            (python3.withPackages (ps: with ps; [ quickfix ]))
-          ];
+          buildInputs =
+            fix-server.buildInputs ++
+            [
+              (pkgs.python3.withPackages (ps: with ps; [ setuptools ]))
+
+            ];
+
+          nativeBuildInputs = fix-server.nativeBuildInputs;
         };
       }
     );

@@ -20,16 +20,18 @@
     },
     "nixpkgs": {
       "locked": {
-        "dirtyRev": "553b959505b847cdbf31abe88d69c1d368f8e394-dirty",
-        "dirtyShortRev": "553b959505b8-dirty",
-        "lastModified": 1722468360,
-        "narHash": "sha256-HaedAyeuHSTg6N4J860uDhlyJxGNLd+k8T3BdYdwRG4=",
-        "type": "git",
-        "url": "file:///Users/janstranik/project/nixpkgs"
+        "lastModified": 1723139199,
+        "narHash": "sha256-qu3/NRYv69ueWeRKXLYJYLJzKAd3+PcE0dthpczGqjY=",
+        "owner": "jstranik",
+        "repo": "nixpkgs",
+        "rev": "e08b88d25d9d48bb8aecc5ba096dc44a1a5aed24",
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "file:///Users/janstranik/project/nixpkgs"
+        "owner": "jstranik",
+        "ref": "quickfix-python3-bindings",
+        "repo": "nixpkgs",
+        "type": "github"
       }
     },
     "root": {
