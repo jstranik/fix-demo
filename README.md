@@ -15,3 +15,12 @@ To run the client, use the following command:
 ```
 nix run .#fix-client
 ```
+
+
+### Remote startup
+You can also run the binaries remotely as: 
+
+``` 
+nix run github:jstranik/fix-demo#fix-server 
+nix run github:jstranik/fix-demo#fix-client
+```
