@@ -5,7 +5,7 @@ stdenv.mkDerivation {
   pname = "fix-server";
   version = "0.1.0";
 
-  src = ./.;  # Assumes the Server.cpp is in the same directory as this nix file
+  src = ./.;
 
   nativeBuildInputs = [ cmake pkg-config makeWrapper ];
   buildInputs = [ quickfix libxml2 ];

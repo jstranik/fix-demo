@@ -68,8 +68,12 @@ class ClientApplication(fix.Application):
 
 def main():
     try:
-        loc = sys.path[0]
-        settings = fix.SessionSettings(f"{loc}/client_settings.cfg", True)
+        if len(sys.argv)>1 :
+            config_file = sys.argv[1]
+        else:
+            loc = sys.path[0]
+            config_file = f"{loc}/client_settings.cfg"
+        settings = fix.SessionSettings(config_file, True)
         application = ClientApplication()
         storeFactory = fix.FileStoreFactory(settings)
         logFactory = fix.FileLogFactory(settings)

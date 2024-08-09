@@ -13,11 +13,9 @@
 
         fix-server = pkgs.callPackage ./server/fix-server.nix {};
         fix-client = pkgs.callPackage ./client/fix-client.nix {};
-        pyfix = pkgs.callPackage ./pyfix.nix { buildPythonPackage = pkgs.python3Packages.buildPythonPackage; };
-
       in {
         packages = {
-          inherit fix-server fix-client pyfix;
+          inherit fix-server fix-client;
           default = fix-server;
         };
 
