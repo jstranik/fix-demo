@@ -1,3 +1,6 @@
 result
 /source*/
 __pycache__
+/server/src/build
+.cache
+compile_commands.json

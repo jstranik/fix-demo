@@ -1,7 +1,7 @@
 import quickfix as fix
 import quickfix42 as fix42
 import sys
-import time, os, threading
+import time, os, threading, random
 
 class ClientApplication(fix.Application):
     def onCreate(self, sessionID):
@@ -54,6 +54,11 @@ class ClientApplication(fix.Application):
 
 
     def sendOrder(self, sessionID):
+        session = fix.Session.lookupSession(sessionID)
+        if not session.isLoggedOn():
+            print("Skipping sending order")
+            return
+
         print("Sending order...")
         message = fix42.NewOrderSingle()
         message.setField(fix.ClOrdID("ClientOrder1"))
@@ -63,6 +68,7 @@ class ClientApplication(fix.Application):
         message.setField(fix.OrdType(fix.OrdType_MARKET))
         message.setField(fix.TransactTime())
         message.setField(fix.HandlInst(fix.HandlInst_MANUAL_ORDER_BEST_EXECUTION))
+        message.setField(fix.Price(random.uniform(10,20)))
 
         fix.Session.sendToTarget(message, sessionID)
 

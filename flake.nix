@@ -11,18 +11,19 @@
       let
         pkgs = nixpkgs.legacyPackages.${system};
 
-        fix-server = pkgs.callPackage ./server/fix-server.nix {};
+        server = pkgs.callPackage ./server/fix-server.nix {};
         fix-client = pkgs.callPackage ./client/fix-client.nix {};
       in {
-        packages = {
-          inherit fix-server fix-client;
+        packages = rec {
+          inherit fix-client;
+          inherit (server) fix-server fix-server-bin;
           default = fix-server;
         };
 
         apps = {
           server = {
             type = "app";
-            program = "${fix-server}/bin/fix-server";
+            program = "${server.fix-server}/bin/fix-server";
           };
           client = {
             type = "app";
@@ -30,16 +31,16 @@
           };
         };
 
-        devShells.default = pkgs.mkShell {
-          buildInputs =
-            fix-server.buildInputs ++
-            [
-              (pkgs.python3.withPackages (ps: with ps; [ setuptools ]))
+        # devShells.default = pkgs.mkShell {
+        #   buildInputs =
+        #     fix-server.buildInputs ++
+        #     [
+        #       (pkgs.python3.withPackages (ps: with ps; [ setuptools ]))
 
-            ];
+        #     ];
 
-          nativeBuildInputs = fix-server.nativeBuildInputs;
-        };
+        #   nativeBuildInputs = fix-server.nativeBuildInputs;
+        # };
       }
     );
 }
