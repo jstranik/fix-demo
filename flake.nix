@@ -13,9 +13,11 @@
 
         server = pkgs.callPackage ./server/fix-server.nix {};
         fix-client = pkgs.callPackage ./client/fix-client.nix {};
+        fix-web-nix = pkgs.callPackage ./web/fix-web.nix { inherit (server) work_dir; };
       in {
         packages = rec {
           inherit fix-client;
+          inherit (fix-web-nix) fix-web fix-web-starter;
           inherit (server) fix-server fix-server-bin;
           default = fix-server;
         };
@@ -30,17 +32,6 @@
             program = "${fix-client}/bin/fix-client";
           };
         };
-
-        # devShells.default = pkgs.mkShell {
-        #   buildInputs =
-        #     fix-server.buildInputs ++
-        #     [
-        #       (pkgs.python3.withPackages (ps: with ps; [ setuptools ]))
-
-        #     ];
-
-        #   nativeBuildInputs = fix-server.nativeBuildInputs;
-        # };
       }
     );
 }

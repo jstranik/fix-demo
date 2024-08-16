@@ -89,8 +89,7 @@ def main():
         print("Client started. Press Ctrl+C to quit.")
 
         # Run until interrupted
-        while True:
-            time.sleep(1)
+        input()
 
     except (fix.ConfigError, fix.RuntimeError) as e:
         print(e)

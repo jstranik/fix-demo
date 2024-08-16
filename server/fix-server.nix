@@ -1,5 +1,5 @@
 # server.nix
-{ stdenv, cmake, quickfix, lib, pkg-config, libxml2, makeWrapper, boost, writeShellScriptBin, fmt, python3, clang-tools }:
+{ stdenv, cmake, quickfix, lib, pkg-config, libxml2, makeWrapper, boost, writeShellScriptBin, fmt, python3, clang-tools, websocketpp, nlohmann_json }:
 let
   pname = "fix-server";
   server = stdenv.mkDerivation rec {
@@ -9,7 +9,7 @@ let
       src = ./src;
 
       nativeBuildInputs = [ cmake pkg-config makeWrapper clang-tools ];
-      buildInputs = [ quickfix libxml2 fmt python3
+      buildInputs = [ quickfix libxml2 fmt python3 websocketpp nlohmann_json
                       (boost.override { enablePython = true; python = python3; })
                     ];
 
@@ -39,6 +39,7 @@ in
 
         cp ${config} ${work_dir}/server_settings.cfg
         cp ${logic} ${work_dir}/logic.py
+        chmod u+w ${work_dir}/logic.py
         export QUICKFIX_DIR=${quickfix}
         export QUICKFIX_STATE=${work_dir}/state
         ${server}/bin/fix-server \
@@ -47,4 +48,5 @@ in
             --state ${work_dir}/state \
             --quickfix ${quickfix}
   '';
+  inherit work_dir;
 }
