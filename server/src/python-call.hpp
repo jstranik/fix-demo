@@ -5,6 +5,7 @@
 #include <optional>
 #include <thread>
 #include <iostream>
+#include <condition_variable>
 
 
 /** Acquire python GIL */

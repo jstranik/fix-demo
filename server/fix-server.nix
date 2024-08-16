@@ -1,6 +1,21 @@
 # server.nix
-{ stdenv, cmake, quickfix, lib, pkg-config, libxml2, makeWrapper, boost, writeShellScriptBin, fmt, python3, clang-tools, websocketpp, nlohmann_json }:
+{ stdenv, cmake, quickfix, lib, pkg-config, libxml2, makeWrapper, boost, writeShellScriptBin, fmt, python3, clang-tools, nlohmann_json, fetchFromGitHub }:
 let
+  websocketpp = stdenv.mkDerivation rec {
+    pname = "websocket++";
+    version = "0.8.2-p";
+
+    src = fetchFromGitHub {
+      owner = "zaphoyd";
+      repo = "websocketpp";
+      rev = "develop";
+      sha256 = "sha256-qw5AbkFdL7hQuEp0ic/7r2BvqDMGEJvAeb1CdmOpnPw=";
+    };
+
+    nativeBuildInputs = [ cmake ];
+
+  };
+
   pname = "fix-server";
   server = stdenv.mkDerivation rec {
       inherit pname;
