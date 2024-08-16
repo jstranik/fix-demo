@@ -2,8 +2,8 @@
   import { onDestroy, onMount } from "svelte";
   import Layout from "./+layout.svelte";
   import { page } from "$app/stores";
-  import { enhance } from "$app/forms";
-  import { data } from "autoprefixer";
+  import { applyAction, enhance } from "$app/forms";
+  import { invalidateAll } from "$app/navigation";
   let current_symbols: string[] = [];
   let prices = {};
   let trades: { price: number; qty: number; symbol: string; ts: Date }[] = [];
@@ -64,9 +64,6 @@
 
     return `${hours}:${minutes}:${seconds}.${milliseconds}`;
   }
-
-  let ta
-  console.log($page.data)
 </script>
 
 <div class="container mx-auto p-4 flex flex-col h-svh">
@@ -116,10 +113,10 @@
     </div>
   </main>
   <section>
-    <form method="post" use:enhance>
+    <form method="post" use:enhance={()=>{ return async (x) => { await x.update({reset:false});}}}>
         <label>
         Logic Script
-        <textarea name="logic" bind:this={ta} class="textarea" rows="4" placeholder="Logic Script" >{$page.form.data.logic || $page.data.logic}</textarea>
+        <textarea name="logic" class="textarea" rows="4" placeholder="Logic Script" value={$page.data.logic}></textarea>
         </label>
         <input type="submit" class="btn variant-ghost-primary"/>
     </form>

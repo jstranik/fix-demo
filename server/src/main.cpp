@@ -8,6 +8,7 @@
 #include <boost/program_options.hpp>
 #include <boost/python.hpp>
 #include <boost/stacktrace.hpp>
+#include <chrono>
 #include <condition_variable>
 #include <cstdlib>
 #include <exception>
@@ -25,6 +26,7 @@
 #include <quickfix/SocketAcceptor.h>
 #include <quickfix/fix42/ExecutionReport.h>
 #include <quickfix/fix42/NewOrderSingle.h>
+#include <thread>
 
 namespace po = boost::program_options;
 
@@ -105,11 +107,20 @@ private:
   WSEndpoint &ws_;
 };
 
+bool do_run = true;
+void signalHandler(int signum) {
+  fmt::print("Interrupt signal ... \n");
+  do_run = false;
+}
+
 int main(int argc, char *argv[]) {
   std::set_terminate([] {
     std::cerr << boost::stacktrace::stacktrace() << std::endl;
     std::exit(EXIT_FAILURE);
   });
+
+  std::signal(SIGINT, signalHandler);
+
   try {
     po::options_description desc("Allowed options");
     desc.add_options()("help", "produce help message")(
@@ -159,9 +170,13 @@ int main(int argc, char *argv[]) {
     if (ec) throw std::runtime_error(fmt::format("Failed starting ws: {}", ec.message()));
 
     std::thread t([&io] { io.run(); });
-    Py_BEGIN_ALLOW_THREADS fmt::print("Server started. Press enter to quit.\n");
-    std::cin.get();
-    Py_END_ALLOW_THREADS fmt::print("Stopping ...\n");
+    Py_BEGIN_ALLOW_THREADS;
+    fmt::print("Server started. Press enter to quit.\n");
+    while(do_run) {
+      std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+    fmt::print("Stopping ...\n");
+    Py_END_ALLOW_THREADS;
     acceptor.stop();
     price_server.stop();
     ws.set_running(false, ec);
