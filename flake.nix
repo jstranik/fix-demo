@@ -22,6 +22,12 @@
           default = fix-server;
         };
 
+        overlays = rec {
+          default = final: prev: {
+              fix = packages;
+          };
+        };
+
         apps = {
           server = {
             type = "app";
