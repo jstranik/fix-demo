@@ -80,6 +80,7 @@ def main():
     args = parser.parse_args()
     print(f"args are {args}")
     try:
+        os.makedirs(os.environ['QUICKFIX_STATE'], exist_ok=True)
         os.environ['FIX_TARGET_HOST'] = args.host if args.host else 'localhost'
         config_file = args.cfg if args.cfg else f"{sys.path[0]}/client_settings.cfg"
         settings = fix.SessionSettings(config_file, True)
