@@ -23,6 +23,7 @@ const config = {
     skeleton({
       themes: { preset: ["skeleton"] },
     }),
+    require("@tailwindcss/typography"),
   ],
 } satisfies Config;
 

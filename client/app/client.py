@@ -1,7 +1,7 @@
 import quickfix as fix
 import quickfix42 as fix42
 import sys
-import time, os, threading, random
+import time, os, threading, random, argparse
 
 class ClientApplication(fix.Application):
     def onCreate(self, sessionID):
@@ -73,12 +73,15 @@ class ClientApplication(fix.Application):
         fix.Session.sendToTarget(message, sessionID)
 
 def main():
+    parser = argparse.ArgumentParser(description="Fix client application")
+    parser.add_argument("--host", type=str, help="Specify the hostname")
+    parser.add_argument("--cfg", type=str, help="Fix Config file")
+
+    args = parser.parse_args()
+    print(f"args are {args}")
     try:
-        if len(sys.argv)>1 :
-            config_file = sys.argv[1]
-        else:
-            loc = sys.path[0]
-            config_file = f"{loc}/client_settings.cfg"
+        os.environ['FIX_TARGET_HOST'] = args.host if args.host else 'localhost'
+        config_file = args.cfg if args.cfg else f"{sys.path[0]}/client_settings.cfg"
         settings = fix.SessionSettings(config_file, True)
         application = ClientApplication()
         storeFactory = fix.FileStoreFactory(settings)

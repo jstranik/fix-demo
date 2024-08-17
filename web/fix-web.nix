@@ -8,7 +8,7 @@ let
 
     src = ./.;
 
-    npmDepsHash = "sha256-wmBtpN2Zn1AinsGA3pEFfzWK8sgGty7hJjJNQHOu6JY=";
+    npmDepsHash = "sha256-dv8k6/wuaaEIm+n+Y0S2P98tkrQbJA25kOJvPwa0co4=";
 
     # The prepack script runs the build script, which we'd rather do in the build phase.
     npmPackFlags = [ "--ignore-scripts" ];
@@ -28,7 +28,6 @@ let
     runtimeInputs = [ nodejs ];
     text = ''
     export NODE_PATH="${fix-web}/lib/node_modules/web/node_modules"
-    #export DOTENV_CONFIG_PATH="${fix-web}/lib/node_modules/portal2/.env.${envSuffix}"
     export LOGIC_FILE="${work_dir}/logic.py"
     ${nodeEnvStr} ${dotenvcli} -c ${envSuffix} -e ${fix-web}/lib/node_modules/web/.env node ${fix-web}/lib/node_modules/web/build/index.js
   '';
