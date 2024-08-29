@@ -7,7 +7,7 @@ cmake_minimum_required(VERSION 3.10)
 project(FIXServer VERSION 1.0)
 
 # Specify the C++ standard
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
@@ -37,3 +37,8 @@ install(TARGETS fix-server DESTINATION bin)
 # Output some status messages
 message(STATUS "QuickFIX include dirs: ${QuickFIX_INCLUDE_DIRS}")
 message(STATUS "QuickFIX libraries: ${QuickFIX_LIBRARIES}")
+
+pkg_check_modules(Fmt REQUIRED fmt)
+
+add_executable(testapp test.cpp)
+target_link_libraries(testapp PRIVATE ${Fmt_LIBRARIES})

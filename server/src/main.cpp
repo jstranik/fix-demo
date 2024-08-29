@@ -1,6 +1,7 @@
 // Server.cpp
-#include "python-call.hpp"
+#include "persistent-data.hpp"
 #include "price-server.hpp"
+#include "python-call.hpp"
 
 #include "quickfix/FixFields.h"
 #include "quickfix/FixValues.h"
@@ -9,13 +10,11 @@
 #include <boost/python.hpp>
 #include <boost/stacktrace.hpp>
 #include <chrono>
-#include <condition_variable>
 #include <cstdlib>
 #include <exception>
 #include <expected>
 #include <fmt/format.h>
 #include <iostream>
-#include <limits>
 #include <optional>
 #include <quickfix/Application.h>
 #include <quickfix/FileLog.h>
@@ -32,7 +31,7 @@ namespace po = boost::program_options;
 
 class ServerApplication : public FIX::Application, public FIX::MessageCracker {
 public:
-  ServerApplication(PythonLogic &logic, update_map &prices, WSEndpoint& ws)
+  ServerApplication(PythonLogic &logic, update_map &prices, WSEndpoint &ws)
       : logic_(logic), prices_(prices), ws_(ws) {}
 
   void onCreate(const FIX::SessionID &) {}
@@ -73,11 +72,9 @@ public:
 
       if (result) {
         json v;
-        v["trade"] = {
-          {"symbol", symbol.getString()},
-          {"qty", qty.getValue()},
-          {"price", price}
-        };
+        v["trade"] = {{"symbol", symbol.getString()},
+                      {"qty", qty.getValue()},
+                      {"price", price}};
         ws_.send(v);
       }
       FIX42::ExecutionReport executionReport;
@@ -123,15 +120,15 @@ int main(int argc, char *argv[]) {
 
   try {
     po::options_description desc("Allowed options");
-    desc.add_options()("help", "produce help message")(
-        "settings", po::value<std::string>()->required(),
-        "path to Python script")("logic", po::value<std::string>()->required(),
-                                 "logic file")(
-        "state", po::value<std::string>()->required(),
-        "state directory")("quickfix", po::value<std::string>()->required(),
-                           "quick fix directory")
+    // clang-format off
+    desc.add_options()
+      ("help", "produce help message")
+      ("settings", po::value<std::string>()->required(), "path to Python script")
+      ("logic", po::value<std::string>()->required(), "logic file")
+      ("state", po::value<std::string>()->required(), "state directory")
+      ("quickfix", po::value<std::string>()->required(), "quick fix directory")
       ("wsport", po::value<int>()->default_value(9998), "Listening web socket port");
-
+    // clang-format on
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
     if (vm.count("help")) {

@@ -1,6 +1,8 @@
 # server.nix
-{ stdenv, cmake, quickfix, lib, pkg-config, libxml2, makeWrapper, boost, writeShellScriptBin, fmt, python3, clang-tools, nlohmann_json, fetchFromGitHub }:
+{ pkgs, clang-tools_18, stdenv, cmake, quickfix, lib, pkg-config, libxml2, makeWrapper, boost, writeShellScriptBin, fmt, python3, clang-tools, nlohmann_json, fetchFromGitHub }:
 let
+  llvmPackages = pkgs.llvmPackages_18;
+  customStdEnv = pkgs.stdenvAdapters.overrideCC pkgs.stdenv llvmPackages.clang;
   websocketpp = stdenv.mkDerivation rec {
     pname = "websocket++";
     version = "0.8.2-p";
@@ -17,13 +19,13 @@ let
   };
 
   pname = "fix-server";
-  server = stdenv.mkDerivation rec {
+  server = customStdEnv.mkDerivation rec {
       inherit pname;
       version = "0.1.0";
 
       src = ./src;
 
-      nativeBuildInputs = [ cmake pkg-config makeWrapper clang-tools ];
+      nativeBuildInputs = [ cmake pkg-config makeWrapper clang-tools_18 ];
       buildInputs = [ quickfix libxml2 fmt python3 websocketpp nlohmann_json
                       (boost.override { enablePython = true; python = python3; })
                     ];

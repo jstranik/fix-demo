@@ -4,3 +4,4 @@ __pycache__
 /server/src/build
 .cache
 compile_commands.json
+/server/.direnv/

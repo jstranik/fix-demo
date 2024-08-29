@@ -20,11 +20,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1723139199,
-        "narHash": "sha256-qu3/NRYv69ueWeRKXLYJYLJzKAd3+PcE0dthpczGqjY=",
+        "lastModified": 1724966427,
+        "narHash": "sha256-ZyUn5qgHO051L3TmDP/1HkhVBHAcpvSb7gcTJGA/4Dc=",
         "owner": "jstranik",
         "repo": "nixpkgs",
-        "rev": "e08b88d25d9d48bb8aecc5ba096dc44a1a5aed24",
+        "rev": "6fba8d70099268a25a4436da83133674045ed32b",
         "type": "github"
       },
       "original": {

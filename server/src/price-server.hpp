@@ -1,13 +1,9 @@
-#include <chrono>
 #include <fmt/core.h>
-#include <iostream>
 #include <map>
 #include <mutex>
 #include <nlohmann/json.hpp>
-#include <random>
 #include <set>
 #include <system_error>
-#include <thread>
 #include <unordered_set>
 #include <websocketpp/common/connection_hdl.hpp>
 #include <websocketpp/config/asio_no_tls.hpp>
@@ -59,9 +55,14 @@ class update_map {
     f(m_current_prices);
   }
 };
-typedef websocketpp::server<websocketpp::config::asio> server;
+
 class WSEndpoint final : private boost::asio::noncopyable {
   public:
+  using server_t = websocketpp::server<websocketpp::config::asio>;
+  using handler_t = std::function<void(const json&)>;
+  WSEndpoint(uint16_t port, boost::asio::io_context& ctx, const handler_t& handler) : WSEndpoint(port, ctx) {
+    handler_ = handler;
+  }
   WSEndpoint(uint16_t port, boost::asio::io_context& ctx)
     : port_(port)
   {
@@ -75,8 +76,11 @@ class WSEndpoint final : private boost::asio::noncopyable {
     server_.set_close_handler([this](connection_hdl hdl){
       connections_.erase(hdl);
     });
-    server_.set_message_handler([this](connection_hdl hdl, server::message_ptr msg) {
-      json j = json::parse(msg->get_payload());
+    server_.set_message_handler([this](connection_hdl hdl, server_t::message_ptr msg) {
+      if (handler_) {
+         json j = json::parse(msg->get_payload());
+         handler_(j);
+      }
     });
   }
 
@@ -109,11 +113,13 @@ class WSEndpoint final : private boost::asio::noncopyable {
     }
   }
 
+  handler_t& handler() {return handler_;}
 
   private:
-  server server_;
+  server_t server_;
   bool running_ = false;
   uint16_t port_;
+  handler_t handler_;
   std::set<websocketpp::connection_hdl, std::owner_less<websocketpp::connection_hdl>> connections_;
 };
 
@@ -167,10 +173,6 @@ private:
     prices_.with_state([&current_prices](auto f){current_prices = f;});
     json j(current_prices);
     try_send(hdl, j.dump() );
-
-    // json j;
-    // j["new_sybmols"] = { "ABC", "DEF", "XYZ"};
-    // try_send(hdl, j.dump());
   }
 
   void on_close(websocketpp::connection_hdl hdl) {
@@ -179,7 +181,7 @@ private:
     m_subscriptions.erase(hdl);
   }
 
-  void on_message(websocketpp::connection_hdl hdl, server::message_ptr msg) {
+  void on_message(websocketpp::connection_hdl hdl, WSEndpoint::server_t::message_ptr msg) {
     try {
       json j = json::parse(msg->get_payload());
 
@@ -222,7 +224,7 @@ private:
     kick_off_timer();
   }
 
-  server m_server;
+  WSEndpoint::server_t m_server;
   std::set<websocketpp::connection_hdl,
            std::owner_less<websocketpp::connection_hdl>>
       m_connections;

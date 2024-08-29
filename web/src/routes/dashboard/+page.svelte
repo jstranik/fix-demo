@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onDestroy, onMount } from "svelte";
-    import { page } from "$app/stores";
+  import { page } from "$app/stores";
   import { applyAction, enhance } from "$app/forms";
   import { invalidateAll } from "$app/navigation";
   import { env } from "$env/dynamic/public";
